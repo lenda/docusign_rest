@@ -153,9 +153,7 @@ module DocusignRest
 
       group_map = signer_tabs.map do |tab_type, tabs|
         tab_map = tabs.map do |tab|
-          "{ \"tabLabel\" : \"#{tab[:tabLabel]}\",
-             \"name\"     : \"#{tab[:name]}\",
-             \"value\"    : \"#{tab[:value]}\" }"
+          tab.to_json
         end
         "\"#{tab_type}\" : [ #{tab_map.join(",")} ]"
       end
