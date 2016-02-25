@@ -415,6 +415,15 @@ module DocusignRest
 
         tab_hash[:list_items] = tab[:list_items] if tab[:list_items]
 
+        tab_hash[:groupName] = tab[:group_name] if tab.key?(:group_name)
+        tab_hash[:radios] = get_tabs(tab[:radios], options, index) if tab.key?(:radios)
+
+        tab_hash[:font] = tab[:font] if tab[:font]
+        tab_hash[:fontSize] = tab[:font_size] if tab[:font_size]
+        tab_hash[:fontColor] = tab[:font_color] if tab[:font_color]
+        tab_hash[:bold] = tab[:bold] if tab[:bold]
+        tab_hash[:italic] = tab[:italic] if tab[:italic]
+
         tab_array << tab_hash
       end
       tab_array
