@@ -418,6 +418,8 @@ module DocusignRest
         tab_hash[:groupName] = tab[:group_name] if tab.key?(:group_name)
         tab_hash[:radios] = get_tabs(tab[:radios], options, index) if tab.key?(:radios)
 
+        tab_hash[:selected] = tab[:selected] if tab[:selected]
+
         tab_hash[:font] = tab[:font] if tab[:font]
         tab_hash[:fontSize] = tab[:font_size] if tab[:font_size]
         tab_hash[:fontColor] = tab[:font_color] if tab[:font_color]
