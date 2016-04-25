@@ -332,6 +332,10 @@ module DocusignRest
           doc_signer[:clientUserId] = signer[:client_id] || signer[:email]
         end
 
+        if signer[:embedded_recipient_start_url]
+          doc_signer[:embeddedRecipientStartURL] = signer[:embedded_recipient_start_url]
+        end
+
         if options[:template] == true
           doc_signer[:templateAccessCodeRequired] = false
           doc_signer[:templateLocked]             = signer[:template_locked].nil? ? true : signer[:template_locked]
