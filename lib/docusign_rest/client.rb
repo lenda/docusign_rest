@@ -673,6 +673,7 @@ module DocusignRest
         envelopeTemplateDefinition: {
           description: options[:description],
           name: options[:name],
+          folderName: options[:folder_name],
           pageCount: 1,
           password: '',
           shared: false
