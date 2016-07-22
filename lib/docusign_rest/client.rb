@@ -1221,8 +1221,13 @@ module DocusignRest
     #    client.get_templates()
     #
     # Returns a list of the available templates.
-    def get_templates
-      uri = build_uri("/accounts/#{acct_id}/templates")
+    def get_templates(options = {})
+      query_string = ''
+      if options[:folder].present?
+        query_string = "?folder=#{options[:folder]}"
+      end
+      
+      uri = build_uri("/accounts/#{acct_id}/templates/#{query_string}")
 
       http = initialize_net_http_ssl(uri)
       request = Net::HTTP::Get.new(uri.request_uri, headers({ 'Content-Type' => 'application/json' }))
