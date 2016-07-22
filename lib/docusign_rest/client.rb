@@ -535,13 +535,6 @@ module DocusignRest
     # Returns an array of signers
     def get_inline_signers(signers, sequence)
       signers_array = []
-      # v1
-      # signers.each do |signer|
-      #   signers_hash = Hash[:email, signer[:email], :name, signer[:name], \
-      #     :recipientId, signer[:recipient_id], :roleName, signer[:role_name], \
-      #     :clientUserId, signer[:client_id] || signer[:email]]
-      #   signers_array << signers_hash
-      # end
       filtered_signers = signers.deep_dup
       filtered_signers.each do |signer|
         signer.each do |key, tabs|
@@ -717,7 +710,6 @@ module DocusignRest
       JSON.parse(response.body)
     end
 
-
     # Public: create an envelope for delivery from a template
     #
     # headers        - Optional hash of headers to merge into the existing
@@ -798,7 +790,6 @@ module DocusignRest
         status:             options[:status],
         compositeTemplates: get_composite_template(options[:server_template_ids], options[:signers])
       }.to_json
-      x = JSON.parse(post_body)
 
       uri = build_uri("/accounts/#{acct_id}/envelopes")
 
