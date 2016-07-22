@@ -516,13 +516,14 @@ module DocusignRest
     # Returns an array of server template hashes
     def get_composite_template(server_template_ids, signers)
       composite_array = []
-      index = 0
+      index = 1
       server_template_ids.each  do |template_id|
-        server_template_hash = Hash[:sequence, index += 1, \
+        server_template_hash = Hash[:sequence, index, \
           :templateId, template_id]
         templates_hash = Hash[:serverTemplates, [server_template_hash], \
-          :inlineTemplates,  get_inline_signers(signers, index += 1)]
+          :inlineTemplates,  get_inline_signers(signers, index)]
         composite_array << templates_hash
+        index += 1
       end
       composite_array
     end
@@ -534,12 +535,23 @@ module DocusignRest
     # Returns an array of signers
     def get_inline_signers(signers, sequence)
       signers_array = []
-      signers.each do |signer|
-        signers_hash = Hash[:email, signer[:email], :name, signer[:name], \
-          :recipientId, signer[:recipient_id], :roleName, signer[:role_name], \
-          :clientUserId, signer[:client_id] || signer[:email]]
-        signers_array << signers_hash
+      # v1
+      # signers.each do |signer|
+      #   signers_hash = Hash[:email, signer[:email], :name, signer[:name], \
+      #     :recipientId, signer[:recipient_id], :roleName, signer[:role_name], \
+      #     :clientUserId, signer[:client_id] || signer[:email]]
+      #   signers_array << signers_hash
+      # end
+      filtered_signers = signers.deep_dup
+      filtered_signers.each do |signer|
+        signer.each do |key, tabs|
+          if key.to_s.end_with?('tabs')
+            filtered_tabs = tabs.select { |tab| tab[:sequence].to_s == sequence.to_s }
+            signer[key] = filtered_tabs
+          end
+        end
       end
+      signers_array = get_signers(filtered_signers)
       template_hash = Hash[:sequence, sequence, :recipients, { signers: signers_array }]
       [template_hash]
     end
@@ -781,9 +793,12 @@ module DocusignRest
       content_type.merge(options[:headers]) if options[:headers]
 
       post_body = {
+        emailBlurb:         options[:email][:body],
+        emailSubject:       options[:email][:subject],
         status:             options[:status],
         compositeTemplates: get_composite_template(options[:server_template_ids], options[:signers])
       }.to_json
+      x = JSON.parse(post_body)
 
       uri = build_uri("/accounts/#{acct_id}/envelopes")
 
