@@ -1310,7 +1310,7 @@ module DocusignRest
     def duplicate_array(array)
       duplicated = []
       array.each do |item|
-        if item.is_a?(Array)
+        if item.is_a?(Hash)
           duplicated << duplicate_hash(item)
         else
           duplicated << item
