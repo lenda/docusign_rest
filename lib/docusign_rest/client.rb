@@ -516,13 +516,14 @@ module DocusignRest
     # Returns an array of server template hashes
     def get_composite_template(server_template_ids, signers)
       composite_array = []
-      index = 0
+      index = 1
       server_template_ids.each  do |template_id|
-        server_template_hash = Hash[:sequence, index += 1, \
+        server_template_hash = Hash[:sequence, index, \
           :templateId, template_id]
         templates_hash = Hash[:serverTemplates, [server_template_hash], \
-          :inlineTemplates,  get_inline_signers(signers, index += 1)]
+          :inlineTemplates,  get_inline_signers(signers, index)]
         composite_array << templates_hash
+        index += 1
       end
       composite_array
     end
@@ -534,12 +535,16 @@ module DocusignRest
     # Returns an array of signers
     def get_inline_signers(signers, sequence)
       signers_array = []
-      signers.each do |signer|
-        signers_hash = Hash[:email, signer[:email], :name, signer[:name], \
-          :recipientId, signer[:recipient_id], :roleName, signer[:role_name], \
-          :clientUserId, signer[:client_id] || signer[:email]]
-        signers_array << signers_hash
+      filtered_signers = duplicate_array(signers)
+      filtered_signers.each do |signer|
+        signer.each do |key, tabs|
+          if key.to_s.end_with?('tabs')
+            filtered_tabs = tabs.select { |tab| tab[:sequence].to_s == sequence.to_s }
+            signer[key] = filtered_tabs
+          end
+        end
       end
+      signers_array = get_signers(filtered_signers)
       template_hash = Hash[:sequence, sequence, :recipients, { signers: signers_array }]
       [template_hash]
     end
@@ -673,6 +678,7 @@ module DocusignRest
         envelopeTemplateDefinition: {
           description: options[:description],
           name: options[:name],
+          folderName: options[:folder_name],
           pageCount: 1,
           password: '',
           shared: false
@@ -703,7 +709,6 @@ module DocusignRest
       response = http.request(request)
       JSON.parse(response.body)
     end
-
 
     # Public: create an envelope for delivery from a template
     #
@@ -780,6 +785,8 @@ module DocusignRest
       content_type.merge(options[:headers]) if options[:headers]
 
       post_body = {
+        emailBlurb:         options[:email][:body],
+        emailSubject:       options[:email][:subject],
         status:             options[:status],
         compositeTemplates: get_composite_template(options[:server_template_ids], options[:signers])
       }.to_json
@@ -1205,8 +1212,13 @@ module DocusignRest
     #    client.get_templates()
     #
     # Returns a list of the available templates.
-    def get_templates
-      uri = build_uri("/accounts/#{acct_id}/templates")
+    def get_templates(options = {})
+      query_string = ''
+      if options[:folder].present?
+        query_string = "?folder=#{options[:folder]}"
+      end
+      
+      uri = build_uri("/accounts/#{acct_id}/templates/#{query_string}")
 
       http = initialize_net_http_ssl(uri)
       request = Net::HTTP::Get.new(uri.request_uri, headers({ 'Content-Type' => 'application/json' }))
@@ -1292,6 +1304,31 @@ module DocusignRest
       request.body = post_body
       response = http.request(request)
       response
+    end
+    
+    private
+    def duplicate_array(array)
+      duplicated = []
+      array.each do |item|
+        if item.is_a?(Hash)
+          duplicated << duplicate_hash(item)
+        else
+          duplicated << item
+        end
+      end
+      duplicated
+    end
+    
+    def duplicate_hash(hash)
+      duplicated = {}
+      hash.each do |key, value|
+        if value.is_a?(Hash)
+          duplicated[key] = duplicate_hash(value)
+        else
+          duplicated[key] = value
+        end
+      end
+      duplicated
     end
   end
 end
