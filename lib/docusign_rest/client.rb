@@ -534,8 +534,7 @@ module DocusignRest
     #
     # Returns an array of signers
     def get_inline_signers(signers, sequence)
-      signers_array = []
-      filtered_signers = duplicate_array(signers)
+      filtered_signers = signers
       filtered_signers.each do |signer|
         signer.each do |key, tabs|
           if key.to_s.end_with?('tabs')
@@ -1304,31 +1303,6 @@ module DocusignRest
       request.body = post_body
       response = http.request(request)
       response
-    end
-    
-    private
-    def duplicate_array(array)
-      duplicated = []
-      array.each do |item|
-        if item.is_a?(Hash)
-          duplicated << duplicate_hash(item)
-        else
-          duplicated << item
-        end
-      end
-      duplicated
-    end
-    
-    def duplicate_hash(hash)
-      duplicated = {}
-      hash.each do |key, value|
-        if value.is_a?(Hash)
-          duplicated[key] = duplicate_hash(value)
-        else
-          duplicated[key] = value
-        end
-      end
-      duplicated
     end
   end
 end
