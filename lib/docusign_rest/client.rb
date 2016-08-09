@@ -534,7 +534,6 @@ module DocusignRest
     #
     # Returns an array of signers
     def get_inline_signers(signers, sequence)
-      signers_array = []
       filtered_signers = signers
       filtered_signers.each do |signer|
         signer.each do |key, tabs|
