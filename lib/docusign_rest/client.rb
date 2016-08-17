@@ -410,7 +410,7 @@ module DocusignRest
         tab_hash[:yPosition]  = tab[:y_position] || '0'
         tab_hash[:name]       = tab[:name] if tab[:name]
         tab_hash[:optional]   = false
-        tab_hash[:tabLabel]   = tab[:label] || 'Signature 1'
+        tab_hash[:tabLabel]   = tab[:label] || tab[:tab_label] || 'Signature 1'
         tab_hash[:width]      = tab[:width] if tab[:width]
         tab_hash[:height]     = tab[:height] if tab[:width]
         tab_hash[:value]      = tab[:value] if tab[:value]
