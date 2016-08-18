@@ -358,7 +358,7 @@ module DocusignRest
           listTabs:             get_tabs(signer[:list_tabs], options, index),
           noteTabs:             nil,
           numberTabs:           nil,
-          radioGroupTabs:       get_group_tabs(signer[:radio_tabs], options, index),
+          radioGroupTabs:       get_radio_group_tabs(signer[:radio_tabs], options, index),
           initialHereTabs:      get_tabs(signer[:initial_here_tabs], options.merge!(initial_here_tab: true), index),
           signHereTabs:         get_tabs(signer[:sign_here_tabs], options.merge!(sign_here_tab: true), index),
           signerAttachmentTabs: nil,
@@ -435,7 +435,7 @@ module DocusignRest
       tab_array
     end
     
-    def get_group_tabs(tabs, options, index)
+    def get_radio_group_tabs(tabs, options, index)
       return [] if tabs.blank?
       group_names = tabs.map { |t| t[:tab_label] }.uniq
       group_names.map do |group_name|
