@@ -996,7 +996,9 @@ module DocusignRest
       content_type = { 'Content-Type' => 'application/json' }
       content_type.merge(options[:headers]) if options[:headers]
 
-      uri = build_uri("/accounts/#{acct_id}/envelopes/#{options[:envelope_id]}/documents/#{options[:document_id]}?watermark=true&&show_changes=true")
+      base_uri = "/accounts/#{acct_id}/envelopes/#{options[:envelope_id]}/documents/#{options[:document_id]}"
+      base_uri += draft_params if options[:draft]
+      uri = build_uri(base_uri)
 
       http = initialize_net_http_ssl(uri)
       request = Net::HTTP::Get.new(uri.request_uri, headers(content_type))
@@ -1055,7 +1057,9 @@ module DocusignRest
       content_type = { 'Content-Type' => 'application/json' }
       content_type.merge(options[:headers]) if options[:headers]
 
-      uri = build_uri("/accounts/#{acct_id}/envelopes/#{options[:envelope_id]}/documents/combined?watermark=true&&show_changes=true")
+      base_uri = "/accounts/#{acct_id}/envelopes/#{options[:envelope_id]}/documents/combined"
+      base_uri += draft_params if options[:draft]
+      uri = build_uri(base_uri)
 
       http = initialize_net_http_ssl(uri)
       request = Net::HTTP::Get.new(uri.request_uri, headers(content_type))
@@ -1318,6 +1322,11 @@ module DocusignRest
       request.body = post_body
       response = http.request(request)
       response
+    end
+
+    private
+    def draft_params
+      '?watermark=true&&show_changes=true'
     end
   end
 end
