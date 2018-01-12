@@ -1326,6 +1326,8 @@ module DocusignRest
 
     private
     def draft_params
+      # From https://stackoverflow.com/questions/34162344/docusign-rest-api-preview-the-envelope
+      # Allows "drafted" docusign documents to display fields when previewed.
       '?watermark=true&&show_changes=true'
     end
   end
