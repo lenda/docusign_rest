@@ -816,7 +816,28 @@ module DocusignRest
       JSON.parse(response.body)
     end
 
+    # Public marks an envelope as sent
+    #
+    # envelope_id           - ID of the envelope which you want to send
+    #
+    # Returns the response (success or failure).
+    def send_envelope(envelope_id)
+      content_type = { 'Content-Type' => 'application/json' }
 
+      post_body = {
+        status: 'sent'
+      }.to_json
+
+      uri = build_uri("/accounts/#{acct_id}/envelopes/#{envelope_id}")
+
+      http = initialize_net_http_ssl(uri)
+      request = Net::HTTP::Put.new(uri.request_uri, headers(content_type))
+      request.body = post_body
+      response = http.request(request)
+
+      JSON.parse(response.body)
+    end
+    
     # Public returns the names specified for a given email address (existing docusign user)
     #
     # email       - the email of the recipient
