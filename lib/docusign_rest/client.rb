@@ -661,7 +661,7 @@ module DocusignRest
       end
 
       post_body = {
-        emailBlurb:   "#{options[:email][:body] if options[:email] && }",
+        emailBlurb:   "#{options[:email][:body] if options[:email]}",
         emailSubject: "#{options[:email][:subject] if options[:email]}",
         documents: documents,
         recipients: {
