@@ -652,7 +652,6 @@ module DocusignRest
     def create_envelope_from_encoded_pdfs(options={})
       file_params = {}
       documents = []
-      binding.pry
       options[:encoded_pdf_contents].each_with_index do |encoded_pdf, i|
         documents << {
           documentId: "#{i + 1}",
@@ -662,7 +661,7 @@ module DocusignRest
       end
 
       post_body = {
-        emailBlurb:   "#{options[:email][:body] if options[:email]}",
+        emailBlurb:   "#{options[:email][:body] if options[:email] && }",
         emailSubject: "#{options[:email][:subject] if options[:email]}",
         documents: documents,
         recipients: {
