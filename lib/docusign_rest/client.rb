@@ -367,7 +367,6 @@ module DocusignRest
           titleTabs:            get_tabs(signer[:title_tabs], options, index),
           zipTabs:              nil
         }
-
         # append the fully build string to the array
         doc_signers << doc_signer
       end
@@ -637,18 +636,31 @@ module DocusignRest
         status: "#{options[:status]}"
       }.to_json
 
-      uri = build_uri("/accounts/#{acct_id}/envelopes")
-
-      http = initialize_net_http_ssl(uri)
-
-      request = initialize_net_http_multipart_post_request(
-                  uri, post_body, file_params, headers(options[:headers])
-                )
-
-      response = http.request(request)
-      JSON.parse(response.body)
+      request_envelope_from_docusign(post_body, file_params, options)
     end
 
+    def create_envelope_from_encoded_pdfs(options={})
+      file_params = {}
+      documents = []
+      options[:encoded_pdf_contents].each_with_index do |encoded_pdf, i|
+        documents << {
+          documentId: "#{i + 1}",
+          name: "name: #{i + 1}",
+          documentBase64: encoded_pdf
+        }
+      end
+
+      post_body = {
+        emailBlurb:   "#{options[:email][:body] if options[:email]}",
+        emailSubject: "#{options[:email][:subject] if options[:email]}",
+        documents: documents,
+        recipients: {
+          signers: get_signers(options[:signers])
+        },
+        status: "#{options[:status]}"
+      }.to_json
+      request_envelope_from_docusign(post_body, file_params, options)
+    end
 
     # Public: allows a template to be dynamically created with several options.
     #
@@ -1350,6 +1362,19 @@ module DocusignRest
       # From https://stackoverflow.com/questions/34162344/docusign-rest-api-preview-the-envelope
       # Allows "drafted" docusign documents to display fields when previewed.
       '?watermark=true&&show_changes=true'
+    end
+
+    def request_envelope_from_docusign(post_body, file_params, options)
+      uri = build_uri("/accounts/#{acct_id}/envelopes")
+
+      http = initialize_net_http_ssl(uri)
+
+      request = initialize_net_http_multipart_post_request(
+                  uri, post_body, file_params, headers(options[:headers])
+                )
+
+      response = http.request(request)
+      JSON.parse(response.body)
     end
   end
 end
