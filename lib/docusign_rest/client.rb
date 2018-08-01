@@ -650,9 +650,9 @@ module DocusignRest
     end
 
     def create_envelope_from_encoded_pdfs(options={})
-      # ios = create_file_ios(options[:files])
       file_params = {}
       documents = []
+      binding.pry
       options[:encoded_pdf_contents].each_with_index do |encoded_pdf, i|
         documents << {
           documentId: "#{i + 1}",
