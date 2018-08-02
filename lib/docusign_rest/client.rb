@@ -367,7 +367,6 @@ module DocusignRest
           titleTabs:            get_tabs(signer[:title_tabs], options, index),
           zipTabs:              nil
         }
-        binding.pry
         # append the fully build string to the array
         doc_signers << doc_signer
       end
