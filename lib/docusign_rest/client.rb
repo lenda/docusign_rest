@@ -637,7 +637,7 @@ module DocusignRest
         status: "#{options[:status]}"
       }.to_json
 
-      request_envelope_from_docusign(post_body, file_params)
+      request_envelope_from_docusign(post_body, file_params, options)
     end
 
     def create_envelope_from_encoded_pdfs(options={})
@@ -662,7 +662,7 @@ module DocusignRest
       }.to_json
       10.times { puts "post body" }
       p post_body
-      request_envelope_from_docusign(post_body, file_params)
+      request_envelope_from_docusign(post_body, file_params, options)
     end
 
     # Public: allows a template to be dynamically created with several options.
@@ -1367,7 +1367,7 @@ module DocusignRest
       '?watermark=true&&show_changes=true'
     end
 
-    def request_envelope_from_docusign(post_body, file_params)
+    def request_envelope_from_docusign(post_body, file_params, options)
       uri = build_uri("/accounts/#{acct_id}/envelopes")
 
       http = initialize_net_http_ssl(uri)
