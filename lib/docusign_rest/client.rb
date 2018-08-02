@@ -345,6 +345,10 @@ module DocusignRest
         doc_signer[:autoNavigation]   = false
         doc_signer[:defaultRecipient] = false
         doc_signer[:signatureInfo]    = nil
+        10.times { puts "" }
+        puts "signer = #{signer.inspect}"
+        puts "options = #{options.inspect}"
+        10.times { puts "" }
         doc_signer[:tabs]             = {
           approveTabs:          nil,
           checkboxTabs:         get_tabs(signer[:checkbox_tabs], options, index),
