@@ -320,7 +320,7 @@ module DocusignRest
           recipientId:                           "#{index + 1}",
           requireIdLookup:                       false,
           roleName:                              signer[:role_name],
-          routingOrder:                          index + 1,
+          routingOrder:                          signer[:routing_order] || 1,
           socialAuthentications:                 nil
         }
 
@@ -433,7 +433,7 @@ module DocusignRest
       end
       tab_array
     end
-    
+
     def get_radio_group_tabs(tabs, options, index)
       return [] if tabs.blank?
       group_names = tabs.map { |t| t[:tab_label] }.uniq
@@ -849,7 +849,7 @@ module DocusignRest
 
       JSON.parse(response.body)
     end
-    
+
     # Public returns the names specified for a given email address (existing docusign user)
     #
     # email       - the email of the recipient
@@ -1268,7 +1268,7 @@ module DocusignRest
       if options[:folder].present?
         query_string = "?folder=#{options[:folder]}"
       end
-      
+
       uri = build_uri("/accounts/#{acct_id}/templates/#{query_string}")
 
       http = initialize_net_http_ssl(uri)
